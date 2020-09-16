@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DevBoost.DroneDelivery.Core.Domain.Messages
 {
@@ -12,6 +10,6 @@ namespace DevBoost.DroneDelivery.Core.Domain.Messages
         }
 
         public string MessageType { get; protected set; }
-        public Guid Id { get; set; }
+        public Guid AggregateRoot { get; set; }
     }
 }

@@ -28,7 +28,7 @@ namespace DevBoost.DroneDelivery.Pagamento.Application.Events
 
         public async Task Handle(PagamentoCartaoAdicionadoEvent  message, CancellationToken cancellationToken)
         {
-            var pagamentoCartao = await _pagamentoQueries.ObterPorId(message.EntityId);
+            var pagamentoCartao = await _pagamentoQueries.ObterPorId(message.AggregateRoot);
 
             if (pagamentoCartao == null)
                 return;

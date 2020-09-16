@@ -75,7 +75,7 @@ namespace DevBoost.DroneDelivery.API.Controllers
         [HttpPatch]
         public async Task<IActionResult> AtualizarSituacaoPedido(AtualizarSituacaoPedidoViewModel viewModel)
         {
-            await _mediator.PublicarEvento(new PagementoPedidoProcessadoEvent(viewModel.PedidoId, viewModel.SituacaoPagamento));
+            await _mediator.PublicarEvento(new PagementoPedidoProcessadoEvent(viewModel.SituacaoPagamento) { AggregateRoot = viewModel.PedidoId });
             return Ok();
         }
 

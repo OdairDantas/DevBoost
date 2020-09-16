@@ -46,7 +46,7 @@ namespace DevBoost.DroneDelivery.Pagamento.Application.Commands
             
             await _pagamentoRepository.Atualizar(pagamento);
 
-            pagamento.AdicionarEvento(new PagamentoCartaoProcessadoEvent(entityId: pagamento.Id,pagamento.PedidoId, pagamento.Situacao));
+            pagamento.AdicionarEvento(new PagamentoCartaoProcessadoEvent(pagamento.PedidoId, pagamento.Situacao) { AggregateRoot= pagamento.Id });
             return await _pagamentoRepository.UnitOfWork.Commit();
         }
 

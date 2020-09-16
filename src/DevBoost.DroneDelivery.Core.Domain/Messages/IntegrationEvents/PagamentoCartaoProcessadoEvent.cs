@@ -5,7 +5,8 @@ namespace DevBoost.DroneDelivery.Core.Domain.Messages.IntegrationEvents
 {
     public class PagamentoCartaoProcessadoEvent : Event
     {
-        public PagamentoCartaoProcessadoEvent(Guid entityId,Guid pedidoId, SituacaoPagamento situacaoPagamento) : base(entityId)
+        
+        public PagamentoCartaoProcessadoEvent(Guid pedidoId, SituacaoPagamento situacaoPagamento)
         {
             PedidoId = pedidoId;
             SituacaoPagamento = situacaoPagamento;

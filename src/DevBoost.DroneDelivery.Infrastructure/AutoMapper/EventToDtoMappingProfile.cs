@@ -9,8 +9,8 @@ namespace DevBoost.DroneDelivery.Infrastructure.AutoMapper
 
         public EventToDtoMappingProfile()
         {
-            CreateMap<Drone,DroneAdicionadoEvent> ()
-                .ConstructUsing(d =>  new DroneAdicionadoEvent(d.Id))               
+            CreateMap<Drone, DroneAdicionadoEvent>()
+                .ForMember(d => d.AggregateRoot, o => o.MapFrom(o => o.Id))
                    .ReverseMap();
         }
 

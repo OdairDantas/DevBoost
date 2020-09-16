@@ -11,7 +11,7 @@ namespace DevBoost.DroneDelivery.Application.Events
         public Guid PagamentoId { get; set; }
         public SituacaoPagamento SituacaoPagamento { get; set; }
 
-        public PagementoPedidoProcessadoEvent(Guid entityId, SituacaoPagamento situacaoPagamento) : base(entityId)
+        public PagementoPedidoProcessadoEvent(SituacaoPagamento situacaoPagamento) 
         {
             SituacaoPagamento = situacaoPagamento;
         }

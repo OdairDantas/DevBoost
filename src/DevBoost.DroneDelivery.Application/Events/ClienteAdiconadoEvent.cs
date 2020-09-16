@@ -9,7 +9,7 @@ namespace DevBoost.DroneDelivery.Application.Events
     {
 
 
-        public ClienteAdiconadoEvent(Guid entityId, string nome, string usuario, string senha, double latitude, double longitude) : base(entityId)
+        public ClienteAdiconadoEvent(string nome, string usuario, string senha, double latitude, double longitude) 
         {
             Nome = nome;
             Usuario = usuario;

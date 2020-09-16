@@ -5,7 +5,7 @@ namespace DevBoost.DroneDelivery.Core.Domain.Messages.IntegrationEvents
     public class PedidoAdicionadoEvent : Event
     {
 
-        public PedidoAdicionadoEvent(Guid entityId, double valor, string bandeiraCartao, string numeroCartao, short mesVencimentoCartao, short anoVencimentoCartao) : base(entityId)
+        public PedidoAdicionadoEvent(double valor, string bandeiraCartao, string numeroCartao, short mesVencimentoCartao, short anoVencimentoCartao)
         {
             Valor = valor;
             BandeiraCartao = bandeiraCartao;

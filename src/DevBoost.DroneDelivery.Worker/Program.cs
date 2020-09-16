@@ -1,4 +1,6 @@
+using DevBoost.DroneDelivery.Worker.BackgroundWorker;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace DevBoost.DroneDelivery.Worker
@@ -9,10 +11,6 @@ namespace DevBoost.DroneDelivery.Worker
         {
             CreateHostBuilder(args).Build().Run();
         }
-        //public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-        //  WebHost.CreateDefaultBuilder(args)
-        //      .UseStartup<Startup>();
-
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>

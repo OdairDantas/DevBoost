@@ -1,10 +1,12 @@
-﻿using DevBoost.DroneDelivery.Worker.Extensions;
+﻿using AutoMapper;
+using DevBoost.DroneDelivery.Core.Domain.Interfaces.Handlers;
+using DevBoost.DroneDelivery.Worker.Events;
 using KafkaNet;
 using KafkaNet.Model;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
-using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,13 +15,17 @@ namespace DevBoost.DroneDelivery.Worker.BackgroundWorker
 {
     public class PagamentoBackground : IHostedService
     {
+        private IMediatrHandler _mediatr;
+        private IMapper _mapper;
         private readonly ILogger<PagamentoBackground> _logger;
         private KafkaOptions _kafkaOptions;
         private BrokerRouter _brokerRouter;
         private Consumer _consumer;
 
-        public PagamentoBackground(ILogger<PagamentoBackground> logger)
+        public PagamentoBackground(ILogger<PagamentoBackground> logger, IMapper mapper,IMediatrHandler mediatr)
         {
+            _mediatr = mediatr;
+            _mapper = mapper;
             _kafkaOptions = new KafkaOptions(new Uri("http://localhost:9092"));
             _brokerRouter = new BrokerRouter(_kafkaOptions);
             _consumer = new Consumer(new ConsumerOptions("pedido-response", _brokerRouter));
@@ -38,18 +44,17 @@ namespace DevBoost.DroneDelivery.Worker.BackgroundWorker
         {
             foreach (var msg in _consumer.Consume())
             {
+
                 try
                 {
-                    using (HttpClient client = new HttpClient())
-                    {
-                        await client.PostAsync("http://localhost:44393/api/pagamento", Encoding.UTF8.GetString(msg.Value).ConvertObjectToByteArrayContent());
-
-                    }
+                    
+                    var obj = JsonConvert.DeserializeObject<PedidoSolicitadoEvent>(Encoding.UTF8.GetString(msg.Value));
+                    var evento = _mapper.Map<PagamentoSolicitadoEvent>(obj);
+                    await _mediatr.PublicarEvento(evento);
                 }
                 catch (Exception ex)
                 {
-
-                    _logger.LogCritical($"algo errado aconteceu : {ex}");
+                    _logger.LogCritical($"algo errado aconteceu");
                 }
                 
 

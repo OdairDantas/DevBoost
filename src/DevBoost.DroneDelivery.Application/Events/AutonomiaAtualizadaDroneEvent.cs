@@ -1,5 +1,4 @@
 ﻿using DevBoost.DroneDelivery.Core.Domain.Messages;
-using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace DevBoost.DroneDelivery.Application.Events
@@ -8,7 +7,7 @@ namespace DevBoost.DroneDelivery.Application.Events
     public class AutonomiaAtualizadaDroneEvent : Event
     {
 
-        public AutonomiaAtualizadaDroneEvent(Guid entityId , int autonomiaRestante ) :base(entityId)
+        public AutonomiaAtualizadaDroneEvent( int autonomiaRestante )
         {
             AutonomiaRestante = autonomiaRestante;
         }

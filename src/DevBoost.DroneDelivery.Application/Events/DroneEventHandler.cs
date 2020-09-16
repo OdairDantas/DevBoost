@@ -26,7 +26,7 @@ namespace DevBoost.DroneDelivery.Application.Events
         public async Task Handle(DroneAdicionadoEvent message, CancellationToken cancellationToken)
         {
 
-            await _mediatr.EnviarComando(new AdicionarDroneItinerarioCommand(DateTime.Now, message.EntityId, EnumStatusDrone.Disponivel));
+            await _mediatr.EnviarComando(new AdicionarDroneItinerarioCommand(DateTime.Now, message.AggregateRoot, EnumStatusDrone.Disponivel));
 
         }
     }

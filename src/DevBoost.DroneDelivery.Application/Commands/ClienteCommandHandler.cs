@@ -34,7 +34,7 @@ namespace DevBoost.DroneDelivery.Application.Commands
             await _clienteRepository.Adicionar(cliente);
             var usuario = _mapper.Map<Usuario>(message);
             
-            cliente.AdicionarEvento(new ClienteAdiconadoEvent(cliente.Id, cliente.Nome, usuario.UserName, usuario.Password, cliente.Latitude, cliente.Longitude));
+            cliente.AdicionarEvento(new ClienteAdiconadoEvent(cliente.Nome, usuario.UserName, usuario.Password, cliente.Latitude, cliente.Longitude) {AggregateRoot= cliente.Id });
             await _clienteRepository.UnitOfWork.Commit();
 
             return true;

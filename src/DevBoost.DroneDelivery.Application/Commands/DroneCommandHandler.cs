@@ -55,7 +55,7 @@ namespace DevBoost.DroneDelivery.Application.Commands
 
             var drone = _mapper.Map<Drone>(_droneQueries.ObterPorId(message.DroneId));
             drone.InformarAutonomiaRestante(message.AutonomiaRestante);
-            drone.AdicionarEvento(new AutonomiaAtualizadaDroneEvent(drone.Id, drone.AutonomiaRestante));
+            drone.AdicionarEvento(new AutonomiaAtualizadaDroneEvent(drone.AutonomiaRestante) { AggregateRoot= drone.Id });
             return await _droneRepository.UnitOfWork.Commit();
 
         }

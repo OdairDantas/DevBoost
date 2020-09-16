@@ -18,7 +18,7 @@ namespace DevBoost.DroneDelivery.Application.Events
 
         public async Task Handle(ClienteAdiconadoEvent message, CancellationToken cancellationToken)
         {
-            await _mediatr.EnviarComando(new AdicionarUsuarioCommand(message.Nome, message.Senha, message.EntityId,"User"));
+            await _mediatr.EnviarComando(new AdicionarUsuarioCommand(message.Nome, message.Senha, message.AggregateRoot, "User") { });
         }
     }
 }

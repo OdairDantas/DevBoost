@@ -73,7 +73,7 @@ namespace DevBoost.DroneDelivery.Application.Commands
             var pedido = new Pedido(message.Peso, message.DataHora, message.Status, message.Valor);
             pedido.InformarCliente(cliente);
 
-            pedido.AdicionarEvento(new PedidoAdicionadoEvent(pedido.Id, pedido.Valor, message.BandeiraCartao, message.NumeroCartao, message.MesVencimentoCartao, message.AnoVencimentoCartao));
+            pedido.AdicionarEvento(new PedidoAdicionadoEvent(pedido.Valor, message.BandeiraCartao, message.NumeroCartao, message.MesVencimentoCartao, message.AnoVencimentoCartao) { AggregateRoot= pedido.Id});
             await _pedidoRepository.Adicionar(pedido);
             return await _pedidoRepository.UnitOfWork.Commit();
         }
@@ -173,7 +173,7 @@ namespace DevBoost.DroneDelivery.Application.Commands
 
                         pedidoDespachado.Drone = entregador;
                         pedidoDespachado.InformarStatus(EnumStatusPedido.EmTransito);
-                        pedidoDespachado.AdicionarEvento(new PedidoDespachadoEvent(pedido.Id));
+                        pedidoDespachado.AdicionarEvento(new PedidoDespachadoEvent() { AggregateRoot= pedido.Id});
                         await _pedidoRepository.Atualizar(pedidoDespachado);
                         await _pedidoRepository.UnitOfWork.Commit();
                         pedidos.Remove(pedidoentregar);

@@ -25,7 +25,7 @@ namespace DevBoost.DroneDelivery.Application.Events
 
             var statusPedido = message.SituacaoPagamento == SituacaoPagamento.Autorizado ? EnumStatusPedido.AguardandoEntregador : EnumStatusPedido.PagamentoRejeitado;
 
-            await _mediatr.EnviarComando(new AtualizarSituacaoPedidoCommand(message.EntityId, statusPedido));
+            await _mediatr.EnviarComando(new AtualizarSituacaoPedidoCommand(message.AggregateRoot, statusPedido));
         }
 
         

@@ -11,6 +11,15 @@ using DevBoost.DroneDelivery.Infrastructure.Swagger;
 using System.Diagnostics.CodeAnalysis;
 using DevBoost.DroneDelivery.Infrastructure.Security;
 using DevBoost.DroneDelivery.Infrastructure.Data.Contexts;
+using Rebus.ServiceProvider;
+using Rebus.Kafka;
+using Rebus.Routing.TypeBased;
+using Confluent.Kafka;
+using DevBoost.DroneDelivery.Core.Domain.Messages;
+using DevBoost.DroneDelivery.Core.Domain.Messages.IntegrationEvents;
+using DevBoost.DroneDelivery.Application.Events;
+using Rebus.Persistence.InMem;
+using DevBoost.DroneDelivery.Application.Sagas;
 
 namespace DevBoost.DroneDelivery.API
 {
@@ -28,6 +37,28 @@ namespace DevBoost.DroneDelivery.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            var nomeFila = "fila_rebus";
+            services.AddRebus(configure => configure
+               //.Transport(t => t.UseInMemoryTransport(new InMemNetwork(), nomeFila))
+               .Transport(t => t.UseKafka("localhost:9092", nomeFila))
+               //.Subscriptions(s => s.StoreInMemory())
+               .Routing(r =>
+               {
+                   r.TypeBased()
+                       .MapAssemblyOf<Message>(nomeFila)
+                       .MapAssemblyOf<PedidoAdicionadoEvent>(nomeFila)
+                       .MapAssemblyOf<PedidoDespachadoEvent>(nomeFila);
+               })
+               .Sagas(s => s.StoreInMemory())
+               .Options(o =>
+               {
+                   o.SetNumberOfWorkers(1);
+                   o.SetMaxParallelism(1);
+                   o.SetBusName("Demo Rebus");
+               })
+           );
+            services.AutoRegisterHandlersFromAssemblyOf<PedidoSaga>();
 
             services.AddDbContext<DCDroneDelivery>();
             services.Register(Configuration);
@@ -65,8 +96,7 @@ namespace DevBoost.DroneDelivery.API
             {
                 app.UseDeveloperExceptionPage();
             }
-
-
+            app.ApplicationServices.UseRebus(async e => await e.Subscribe<PedidoSolicitadoEvent>());
             app.UseHttpsRedirection();
 
             app.UseRouting();
