@@ -76,9 +76,8 @@ namespace DevBoost.DroneDelivery.Application.Commands
 
             pedido.AdicionarEvento(new PedidoAdicionadoEvent(pedido.Valor, message.BandeiraCartao, message.NumeroCartao, message.MesVencimentoCartao, message.AnoVencimentoCartao) { AggregateRoot = pedido.Id });
 
-            await _mGRepository.Adicionar(pedido);
-            //await _pedidoRepository.Adicionar(pedido);
-            //return await _pedidoRepository.UnitOfWork.Commit();
+            await _pedidoRepository.Adicionar(pedido);
+            
             return true;
         }
 
@@ -86,11 +85,11 @@ namespace DevBoost.DroneDelivery.Application.Commands
         {
             if (!ValidarComando(message)) return false;
 
-            var pedido = await _mGRepository.ObterPorId(message.PedidoId);
+            var pedido = await _pedidoRepository.ObterPorId(message.PedidoId);
             if (pedido == null) return false;
 
             pedido.AtualizarStatus(message.StatusPedido);
-            await _mGRepository.Atualizar(pedido);
+            await _pedidoRepository.Atualizar(pedido);
 
             return true;
             //return await _pedidoRepository.UnitOfWork.Commit();
@@ -180,7 +179,7 @@ namespace DevBoost.DroneDelivery.Application.Commands
                         pedidoDespachado.InformarStatus(EnumStatusPedido.EmTransito);
                         pedidoDespachado.AdicionarEvento(new PedidoDespachadoEvent() { AggregateRoot = pedido.Id });
                         await _pedidoRepository.Atualizar(pedidoDespachado);
-                        await _pedidoRepository.UnitOfWork.Commit();
+                        //await _pedidoRepository.UnitOfWork.Commit();
                         pedidos.Remove(pedidoentregar);
                     }
                 }

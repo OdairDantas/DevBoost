@@ -11,11 +11,11 @@ namespace DevBoost.DroneDelivery.Application.Queries
 {
     public class PedidoQueries : IPedidoQueries
     {
-        private readonly IMGRepository _pedidoRepository;
+        private readonly IPedidoRepository _pedidoRepository;
         private readonly IMapper _mapper;
-        public PedidoQueries(IMGRepository mGRepository, IMapper mapper)
+        public PedidoQueries(IPedidoRepository  pedidoRepository, IMapper mapper)
         {
-            _pedidoRepository = mGRepository;
+            _pedidoRepository = pedidoRepository;
             _mapper = mapper;
         }
 

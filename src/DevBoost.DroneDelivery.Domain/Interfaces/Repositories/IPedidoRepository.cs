@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DevBoost.DroneDelivery.Domain.Interfaces.Repositories
 {
-    public interface IPedidoRepository : IRepository<Pedido>
+    public interface IPedidoRepository : IMongoRepository<Pedido>
     {
 
         Task<IEnumerable<Pedido>> ObterPedidosEmAberto();

@@ -5,11 +5,13 @@ using DevBoost.DroneDelivery.Application.Events;
 using DevBoost.DroneDelivery.Application.Queries;
 using DevBoost.DroneDelivery.Application.Resources;
 using DevBoost.DroneDelivery.Core.Domain.Interfaces.Handlers;
+using DevBoost.DroneDelivery.Core.Domain.Interfaces.Repositories;
 using DevBoost.DroneDelivery.Domain.Interfaces;
 using DevBoost.DroneDelivery.Domain.Interfaces.Repositories;
 using DevBoost.DroneDelivery.Domain.ValueObjects;
 using DevBoost.DroneDelivery.Infrastructure.AcessoAoUsuario;
 using DevBoost.DroneDelivery.Infrastructure.AutoMapper;
+using DevBoost.DroneDelivery.Infrastructure.Data.Config;
 using DevBoost.DroneDelivery.Infrastructure.Data.Contexts;
 using DevBoost.DroneDelivery.Infrastructure.Data.Repositories;
 using DevBoost.DroneDelivery.Infrastructure.Security;
@@ -37,6 +39,8 @@ namespace DevBoost.DroneDelivery.CrossCutting.IOC
         {
             BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
             services.Configure<PedidoMongoContext>(configuration.GetSection(nameof(PedidoMongoContext)));
+
+            services.AddScoped(typeof(MongoDbContext<>));
             
             services.AddSingleton<IPedidoMongoContext>(sp => sp.GetRequiredService<IOptions<PedidoMongoContext>>().Value);
           
@@ -92,12 +96,14 @@ namespace DevBoost.DroneDelivery.CrossCutting.IOC
             services.AddScoped<IRequestHandler<AdicionarDroneItinerarioCommand, bool>, DroneItinerarioCommandHandler>();
 
 
-
+            services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
 
             TokenGenerator.TokenConfig = configuration.GetSection("Token").Get<Token>();
             Loja.Localizacao = configuration.GetSection("Localizacao").Get<Localizacao>();
 
-           
+            MongoConfig.ConnectionString = configuration.GetSection("MongoConnection:ConnectionString").Value;
+            MongoConfig.DatabaseName = configuration.GetSection("MongoConnection:Database").Value;
+            MongoConfig.IsSSL = Convert.ToBoolean(configuration.GetSection("MongoConnection:IsSSL").Value);
 
             var assembly = AppDomain.CurrentDomain.Load("DevBoost.DroneDelivery.Application");
             services.AddMediatR(assembly);
@@ -111,6 +117,7 @@ namespace DevBoost.DroneDelivery.CrossCutting.IOC
                 typeof(ViewModelToDomainMappingProfile));
 
 
+            
 
             services.AddDbContext<DCDroneDelivery>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
