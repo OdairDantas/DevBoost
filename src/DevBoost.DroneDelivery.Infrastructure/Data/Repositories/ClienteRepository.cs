@@ -4,7 +4,7 @@ using DevBoost.DroneDelivery.Infrastructure.Data.Contexts;
 
 namespace DevBoost.DroneDelivery.Infrastructure.Data.Repositories
 {
-    public class ClienteRepository : Repository<Cliente>, IClienteRepository
+    public class ClienteRepository : EFRepository<Cliente>, IClienteRepository
     {
         private readonly DCDroneDelivery _context;
 

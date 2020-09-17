@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace DevBoost.DroneDelivery.Infrastructure.Data.Repositories
 {
-    public class DroneRepository : Repository<Drone>, IDroneRepository
+    public class DroneRepository : EFRepository<Drone>, IDroneRepository
     {
         private readonly DCDroneDelivery _context;
 

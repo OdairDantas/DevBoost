@@ -23,6 +23,13 @@ namespace DevBoost.DroneDelivery.Infrastructure.AutoMapper
                 .ForMember(d => d.Longitude, o => o.MapFrom(o => o.Longitude))
                 .ForMember(d => d.Latitude, o => o.MapFrom(o => o.Latitude));
 
+            CreateMap<Pedido, PedidoViewModel>()
+               .ForMember(d => d.Valor, o => o.MapFrom(o => o.Valor))
+               .ForMember(d => d.Situacao, o => o.MapFrom(o => o.Status))
+               .ForMember(d => d.Cliente, o => o.MapFrom(o => new ClienteViewModel() { Nome = o.Cliente.Nome, Id = o.Cliente.Id, Latitude = o.Cliente.Latitude, Longitude = o.Cliente.Longitude }))
+               .ForMember(d => d.Drone, o => o.MapFrom(o => new DroneViewModel() { Autonomia = o.Drone.Autonomia, AutonomiaRestante = o.Drone.AutonomiaRestante, Capacidade = o.Drone.Capacidade, Carga = o.Drone.Carga, Velocidade = o.Drone.Velocidade, Id = o.Drone.Id }))
+               .ForMember(d => d.Peso, o => o.MapFrom(o => o.Peso))
+               .ForMember(d => d.Id, o => o.MapFrom(o => o.Id));
         }
 
     }

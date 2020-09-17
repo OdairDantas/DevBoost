@@ -1,4 +1,5 @@
 ﻿using DevBoost.Dronedelivery.Domain.Enumerators;
+using DevBoost.DroneDelivery.Application.Validations;
 using DevBoost.DroneDelivery.Core.Domain.Messages;
 using System;
 
@@ -16,6 +17,10 @@ namespace DevBoost.DroneDelivery.Application.Commands
         public Guid PedidoId { get; private set; }
 
         public EnumStatusPedido StatusPedido { get; private set; }
-
+        public override bool EhValido()
+        {
+            ValidationResult = new AtualizarSituacaoPedidoValidation().Validate(this);
+            return ValidationResult.IsValid;
+        }
     }
 }

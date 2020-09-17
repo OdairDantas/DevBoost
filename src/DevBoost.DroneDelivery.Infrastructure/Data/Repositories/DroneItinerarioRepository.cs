@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DevBoost.DroneDelivery.Infrastructure.Data.Repositories
 {
-    public class DroneItinerarioRepository : Repository<DroneItinerario>,  IDroneItinerarioRepository
+    public class DroneItinerarioRepository : EFRepository<DroneItinerario>,  IDroneItinerarioRepository
     {
         private readonly DCDroneDelivery _context;
 

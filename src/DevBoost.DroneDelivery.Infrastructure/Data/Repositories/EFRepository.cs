@@ -1,5 +1,4 @@
 ﻿using DevBoost.DroneDelivery.Core.Domain.Interfaces.Repositories;
-using DevBoost.DroneDelivery.Domain.Interfaces.Repositories;
 using DevBoost.DroneDelivery.Infrastructure.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -10,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace DevBoost.DroneDelivery.Infrastructure.Data.Repositories
 {
-    public abstract class Repository<T> : IRepository<T> where T : class
+    public abstract class EFRepository<T> : IRepository<T> where T : class
     {
         public IUnitOfWork UnitOfWork => _context;
         private readonly BaseDbContext _context;
         private readonly DbSet<T> _repo;
 
-        protected Repository(BaseDbContext context)
+        protected EFRepository(BaseDbContext context)
         {
             _context = context;
             _repo = _context.Set<T>();

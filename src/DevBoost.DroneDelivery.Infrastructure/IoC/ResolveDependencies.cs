@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
-using Confluent.Kafka;
 using DevBoost.DroneDelivery.Application.Bus;
 using DevBoost.DroneDelivery.Application.Commands;
 using DevBoost.DroneDelivery.Application.Events;
 using DevBoost.DroneDelivery.Application.Queries;
 using DevBoost.DroneDelivery.Application.Resources;
 using DevBoost.DroneDelivery.Core.Domain.Interfaces.Handlers;
-using DevBoost.DroneDelivery.Core.Domain.Messages.IntegrationEvents;
 using DevBoost.DroneDelivery.Domain.Interfaces;
 using DevBoost.DroneDelivery.Domain.Interfaces.Repositories;
 using DevBoost.DroneDelivery.Domain.ValueObjects;
@@ -20,9 +18,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Rebus.Kafka;
-using Rebus.Persistence.InMem;
-using Rebus.Routing.TypeBased;
+using Microsoft.Extensions.Options;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using Rebus.ServiceProvider;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -36,14 +35,17 @@ namespace DevBoost.DroneDelivery.CrossCutting.IOC
     {
         public static IServiceCollection Register(this IServiceCollection services, IConfiguration configuration)
         {
-           
-
+            BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
+            services.Configure<PedidoMongoContext>(configuration.GetSection(nameof(PedidoMongoContext)));
+            
+            services.AddSingleton<IPedidoMongoContext>(sp => sp.GetRequiredService<IOptions<PedidoMongoContext>>().Value);
+          
             services.AddScoped<IDroneItinerarioRepository, DroneItinerarioRepository>();
             services.AddScoped<IDroneRepository, DroneRepository>();
             services.AddScoped<IPedidoRepository, PedidoRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IClienteRepository, ClienteRepository>();
-
+            services.AddSingleton<IMGRepository, MGRepository>();
             services.AddScoped<IUsuarioAutenticado, UsuarioAutenticado>();
 
             

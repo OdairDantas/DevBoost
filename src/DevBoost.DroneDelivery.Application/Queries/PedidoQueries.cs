@@ -4,17 +4,18 @@ using DevBoost.DroneDelivery.Domain.Entities;
 using DevBoost.DroneDelivery.Domain.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DevBoost.DroneDelivery.Application.Queries
 {
     public class PedidoQueries : IPedidoQueries
     {
-        private readonly IPedidoRepository _pedidoRepository;
+        private readonly IMGRepository _pedidoRepository;
         private readonly IMapper _mapper;
-        public PedidoQueries(IPedidoRepository droneRepository, IMapper mapper)
+        public PedidoQueries(IMGRepository mGRepository, IMapper mapper)
         {
-            _pedidoRepository = droneRepository;
+            _pedidoRepository = mGRepository;
             _mapper = mapper;
         }
 
@@ -25,7 +26,9 @@ namespace DevBoost.DroneDelivery.Application.Queries
         }
         public async Task<IEnumerable<PedidoViewModel>> ObterTodos()
         {
-            return _mapper.Map<IEnumerable<Pedido>, IEnumerable<PedidoViewModel>>(await _pedidoRepository.ObterTodos());
+
+            return _mapper.Map<IEnumerable<Pedido>, IEnumerable<PedidoViewModel>>(_pedidoRepository.ObterTodos().Result.AsEnumerable());
+            // return _mapper.Map<IEnumerable<Pedido>, IEnumerable<PedidoViewModel>>(await _pedidoRepository.ObterTodos());
         }
 
         public async Task<IEnumerable<PedidoViewModel>> ObterPedidosEmTransito()
@@ -44,6 +47,6 @@ namespace DevBoost.DroneDelivery.Application.Queries
 
             return _mapper.Map<IEnumerable<Pedido>, IEnumerable<PedidoViewModel>>(await _pedidoRepository.ObterTodos());
         }
-        
+
     }
 }

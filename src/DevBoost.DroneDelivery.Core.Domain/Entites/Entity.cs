@@ -1,6 +1,9 @@
 ﻿using DevBoost.DroneDelivery.Core.Domain.Messages;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
 namespace DevBoost.DroneDelivery.Core.Domain.Entities
@@ -16,7 +19,19 @@ namespace DevBoost.DroneDelivery.Core.Domain.Entities
             Id = Guid.NewGuid();
         }
 
+        //[BsonIgnore]
+        [BsonId]
+        //[BsonGuidRepresentation(GuidRepresentation.Standard)]
         public Guid Id { get; private set; }
+
+
+        //[BsonId]
+        //[NotMapped]
+        //public string DontUseInAppMongoId
+        //{
+        //    get { return Id.ToString(); }
+        //    set { Id = Guid.Parse(value); }
+        //}
 
         public void AdicionarEvento(Event evento)
         {

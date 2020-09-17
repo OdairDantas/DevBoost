@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DevBoost.DroneDelivery.Infrastructure.Data.Repositories
 {
-    public class UserRepository : Repository<Usuario>, IUserRepository
+    public class UserRepository : EFRepository<Usuario>, IUserRepository
     {
         private readonly DCDroneDelivery _context;
 

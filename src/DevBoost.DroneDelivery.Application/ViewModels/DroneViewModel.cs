@@ -11,6 +11,6 @@ namespace DevBoost.DroneDelivery.Application.ViewModels
         public int Velocidade { get; set; }
         public int Autonomia { get; set; }
         public int Carga { get; set; }
-        public int AutonomiaRestante { get; private set; }
+        public int AutonomiaRestante { get; set; }
     }
 }

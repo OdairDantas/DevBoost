@@ -1,10 +1,12 @@
-﻿using DevBoost.DroneDelivery.Core.Domain.Messages.IntegrationEvents;
+﻿using DevBoost.Dronedelivery.Domain.Enumerators;
+using DevBoost.DroneDelivery.Application.Commands;
+using DevBoost.DroneDelivery.Core.Domain.Interfaces.Handlers;
+using DevBoost.DroneDelivery.Core.Domain.Messages.IntegrationEvents;
 using KafkaNet;
 using KafkaNet.Model;
 using MediatR;
 using Newtonsoft.Json;
 using Rebus.Bus;
-using Rebus.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -12,12 +14,12 @@ using System.Threading.Tasks;
 
 namespace DevBoost.DroneDelivery.Application.Events
 {
-    public class PedidoEventHandler : INotificationHandler<PedidoAdicionadoEvent>, IHandleMessages<PedidoAdicionadoEvent>
+    public class PedidoEventHandler : INotificationHandler<PagementoPedidoProcessadoEvent>, INotificationHandler<PedidoAdicionadoEvent>
     {
-        private readonly IBus _bus;
-        public PedidoEventHandler(IBus bus)
+        private readonly IMediatrHandler _mediatr;
+        public PedidoEventHandler(IMediatrHandler mediatr)
         {
-            _bus = bus;
+            _mediatr = mediatr;
         }
         public PedidoEventHandler()
         {
@@ -26,7 +28,7 @@ namespace DevBoost.DroneDelivery.Application.Events
         public async Task Handle(PedidoAdicionadoEvent message, CancellationToken cancellationToken)
         {
 
-           
+
 
             Uri uri = new Uri("http://localhost:9092");
 
@@ -42,7 +44,7 @@ namespace DevBoost.DroneDelivery.Application.Events
                 using var client = new Producer(router);
                 client.SendMessageAsync(topicName, new List<KafkaNet.Protocol.Message> { msg }).Wait();
             });
-            
+
 
 
 
@@ -51,9 +53,14 @@ namespace DevBoost.DroneDelivery.Application.Events
 
         }
 
-        public async Task Handle(PedidoAdicionadoEvent message)
+        public async Task Handle(PagementoPedidoProcessadoEvent message, CancellationToken cancellationToken)
         {
-            _bus.Publish(message).Wait();
+
+
+            if (message.SituacaoPagamento == Core.Domain.Enumerators.SituacaoPagamento.Autorizado)
+                await _mediatr.EnviarComando(new AtualizarSituacaoPedidoCommand(message.AggregateRoot, EnumStatusPedido.EmTransito));
+            else
+               await _mediatr.EnviarComando(new AtualizarSituacaoPedidoCommand(message.AggregateRoot, EnumStatusPedido.PagamentoRejeitado));
         }
     }
 }

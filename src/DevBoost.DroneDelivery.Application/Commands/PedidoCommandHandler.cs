@@ -23,18 +23,19 @@ namespace DevBoost.DroneDelivery.Application.Commands
     public class PedidoCommandHandler : IRequestHandler<AdicionarPedidoCommand, bool>, IRequestHandler<AtualizarSituacaoPedidoCommand, bool>, IRequestHandler<DespacharPedidoCommand, bool>
     {
         private readonly IPedidoRepository _pedidoRepository;
-        private readonly IClienteRepository  _clienteRepository;
+        private readonly IClienteRepository _clienteRepository;
         private readonly IDroneRepository _droneRepository;
         private readonly Localizacao _localizacaoLoja;
         private readonly IUserRepository _userRepository;
         private readonly IMediatrHandler _mediatr;
         public readonly IPedidoQueries _pedidoQueries;
-        public readonly IDroneItinerarioQueries  _droneItinerarioQueries;
+        public readonly IDroneItinerarioQueries _droneItinerarioQueries;
         private readonly IMapper _mapper;
-        public PedidoCommandHandler(IMapper mapper, IClienteRepository clienteRepository, IDroneItinerarioQueries droneItinerarioQueries, IPedidoQueries pedidoQueries, IDroneRepository droneRepository, IMediatrHandler mediatr, IPedidoRepository repositoryPedido, IUserRepository userRepository)
+        private readonly IMGRepository _mGRepository;
+        public PedidoCommandHandler(IMGRepository mGRepository, IMapper mapper, IClienteRepository clienteRepository, IDroneItinerarioQueries droneItinerarioQueries, IPedidoQueries pedidoQueries, IDroneRepository droneRepository, IMediatrHandler mediatr, IPedidoRepository repositoryPedido, IUserRepository userRepository)
         {
             _pedidoRepository = repositoryPedido;
-            
+            _mGRepository = mGRepository;
             _userRepository = userRepository;
             _mediatr = mediatr;
             _droneRepository = droneRepository;
@@ -51,7 +52,7 @@ namespace DevBoost.DroneDelivery.Application.Commands
 
 
             var cliente = await _clienteRepository.ObterPorId(message.ClienteId);
-            var drone = _droneRepository.ObterTodos().Result.OrderByDescending(d=>d.Autonomia).FirstOrDefault(d => d.Capacidade >= message.Peso);
+            var drone = _droneRepository.ObterTodos().Result.OrderByDescending(d => d.Autonomia).FirstOrDefault(d => d.Capacidade >= message.Peso);
 
             if (drone == null)
             {
@@ -69,26 +70,30 @@ namespace DevBoost.DroneDelivery.Application.Commands
                 await _mediatr.PublicarNotificacao(new DomainNotification(message.MessageType, "Fora da área de entrega."));
                 return false;
             }
-                
+
             var pedido = new Pedido(message.Peso, message.DataHora, message.Status, message.Valor);
             pedido.InformarCliente(cliente);
 
-            pedido.AdicionarEvento(new PedidoAdicionadoEvent(pedido.Valor, message.BandeiraCartao, message.NumeroCartao, message.MesVencimentoCartao, message.AnoVencimentoCartao) { AggregateRoot= pedido.Id});
-            await _pedidoRepository.Adicionar(pedido);
-            return await _pedidoRepository.UnitOfWork.Commit();
+            pedido.AdicionarEvento(new PedidoAdicionadoEvent(pedido.Valor, message.BandeiraCartao, message.NumeroCartao, message.MesVencimentoCartao, message.AnoVencimentoCartao) { AggregateRoot = pedido.Id });
+
+            await _mGRepository.Adicionar(pedido);
+            //await _pedidoRepository.Adicionar(pedido);
+            //return await _pedidoRepository.UnitOfWork.Commit();
+            return true;
         }
 
         public async Task<bool> Handle(AtualizarSituacaoPedidoCommand message, CancellationToken cancellationToken)
         {
             if (!ValidarComando(message)) return false;
 
-            var pedido = await _pedidoRepository.ObterPorId(message.PedidoId);
+            var pedido = await _mGRepository.ObterPorId(message.PedidoId);
             if (pedido == null) return false;
 
             pedido.AtualizarStatus(message.StatusPedido);
-            await _pedidoRepository.Atualizar(pedido);
+            await _mGRepository.Atualizar(pedido);
 
-            return await _pedidoRepository.UnitOfWork.Commit();
+            return true;
+            //return await _pedidoRepository.UnitOfWork.Commit();
         }
         public async Task<bool> Handle(DespacharPedidoCommand message, CancellationToken cancellationToken)
         {
@@ -173,7 +178,7 @@ namespace DevBoost.DroneDelivery.Application.Commands
 
                         pedidoDespachado.Drone = entregador;
                         pedidoDespachado.InformarStatus(EnumStatusPedido.EmTransito);
-                        pedidoDespachado.AdicionarEvento(new PedidoDespachadoEvent() { AggregateRoot= pedido.Id});
+                        pedidoDespachado.AdicionarEvento(new PedidoDespachadoEvent() { AggregateRoot = pedido.Id });
                         await _pedidoRepository.Atualizar(pedidoDespachado);
                         await _pedidoRepository.UnitOfWork.Commit();
                         pedidos.Remove(pedidoentregar);
