@@ -31,11 +31,11 @@ namespace DevBoost.DroneDelivery.Application.Commands
         public readonly IPedidoQueries _pedidoQueries;
         public readonly IDroneItinerarioQueries _droneItinerarioQueries;
         private readonly IMapper _mapper;
-        private readonly IMGRepository _mGRepository;
-        public PedidoCommandHandler(IMGRepository mGRepository, IMapper mapper, IClienteRepository clienteRepository, IDroneItinerarioQueries droneItinerarioQueries, IPedidoQueries pedidoQueries, IDroneRepository droneRepository, IMediatrHandler mediatr, IPedidoRepository repositoryPedido, IUserRepository userRepository)
+     
+        public PedidoCommandHandler(IMapper mapper, IClienteRepository clienteRepository, IDroneItinerarioQueries droneItinerarioQueries, IPedidoQueries pedidoQueries, IDroneRepository droneRepository, IMediatrHandler mediatr, IPedidoRepository repositoryPedido, IUserRepository userRepository)
         {
             _pedidoRepository = repositoryPedido;
-            _mGRepository = mGRepository;
+           
             _userRepository = userRepository;
             _mediatr = mediatr;
             _droneRepository = droneRepository;

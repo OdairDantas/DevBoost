@@ -38,18 +38,21 @@ namespace DevBoost.DroneDelivery.CrossCutting.IOC
         public static IServiceCollection Register(this IServiceCollection services, IConfiguration configuration)
         {
             BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
-            services.Configure<PedidoMongoContext>(configuration.GetSection(nameof(PedidoMongoContext)));
-
             services.AddScoped(typeof(MongoDbContext<>));
-            
-            services.AddSingleton<IPedidoMongoContext>(sp => sp.GetRequiredService<IOptions<PedidoMongoContext>>().Value);
-          
+
+            services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
+
+            MongoConfig.ConnectionString = configuration.GetSection("MongoConnection:ConnectionString").Value;
+            MongoConfig.DatabaseName = configuration.GetSection("MongoConnection:Database").Value;
+            MongoConfig.IsSSL = Convert.ToBoolean(configuration.GetSection("MongoConnection:IsSSL").Value);
+
+
+
             services.AddScoped<IDroneItinerarioRepository, DroneItinerarioRepository>();
             services.AddScoped<IDroneRepository, DroneRepository>();
             services.AddScoped<IPedidoRepository, PedidoRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IClienteRepository, ClienteRepository>();
-            services.AddSingleton<IMGRepository, MGRepository>();
             services.AddScoped<IUsuarioAutenticado, UsuarioAutenticado>();
 
             
@@ -96,14 +99,12 @@ namespace DevBoost.DroneDelivery.CrossCutting.IOC
             services.AddScoped<IRequestHandler<AdicionarDroneItinerarioCommand, bool>, DroneItinerarioCommandHandler>();
 
 
-            services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
+            
 
             TokenGenerator.TokenConfig = configuration.GetSection("Token").Get<Token>();
             Loja.Localizacao = configuration.GetSection("Localizacao").Get<Localizacao>();
 
-            MongoConfig.ConnectionString = configuration.GetSection("MongoConnection:ConnectionString").Value;
-            MongoConfig.DatabaseName = configuration.GetSection("MongoConnection:Database").Value;
-            MongoConfig.IsSSL = Convert.ToBoolean(configuration.GetSection("MongoConnection:IsSSL").Value);
+            
 
             var assembly = AppDomain.CurrentDomain.Load("DevBoost.DroneDelivery.Application");
             services.AddMediatR(assembly);
